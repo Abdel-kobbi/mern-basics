@@ -14,8 +14,8 @@ const AdminSchema = new Schema({
 });
 
 AdminSchema.methods.comparePassword = function (password) {
-    return compareSync(password, this.password)
-}cm
+    return compareSync(password, this.password);
+}
 
 AdminSchema.pre("save", function (next) {
     if (this.isModified) {

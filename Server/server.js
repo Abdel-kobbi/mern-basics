@@ -61,6 +61,28 @@ app.delete("/users", async (req, res) => {
     }
 })
 
+
+// Admins model
+const AdminModel = require("./Models/Admin");
+
+app.post("/register", async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const admin = await AdminModel.findOne({ username });
+        if (admin) {
+            return res.json({ message: "Admin already exists" });
+        }
+        const newAdmin = new AdminModel({ username, password });
+        await newAdmin.save();
+        res.status(201).json({
+            created: true,
+            admin: newAdmin
+        })
+    } catch (err) {
+        console.log(err);
+    }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log("server work on port", PORT);

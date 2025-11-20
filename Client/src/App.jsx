@@ -50,7 +50,7 @@ function App() {
 
     if (responce.created) {
       alert("User added successufuly");
-      setUsers(prev => [...prev, user]);
+      setUsers(prev => [...prev, responce.data]);
       clearForm();
     } else {
       alert("Error try again");
