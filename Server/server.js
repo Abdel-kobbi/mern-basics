@@ -1,3 +1,4 @@
+require("dotenv/config");
 // create server
 const express = require("express");
 const app = express();
@@ -60,7 +61,7 @@ app.delete("/users", async (req, res) => {
     }
 })
 
-
-app.listen(3000, () => {
-    console.log("server work!!");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log("server work on port", PORT);
 })
