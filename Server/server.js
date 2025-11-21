@@ -3,8 +3,10 @@ require("dotenv/config");
 const express = require("express");
 const app = express();
 const cors = require('cors');
+const jwt = require("jsonwebtoken");
+
 app.use(cors());
-app.use(express.json())
+app.use(express.json());
 
 
 
@@ -65,22 +67,41 @@ app.delete("/users", async (req, res) => {
 // Admins model
 const AdminModel = require("./Models/Admin");
 
+// register admin
 app.post("/register", async (req, res) => {
     try {
         const { username, password } = req.body;
         const admin = await AdminModel.findOne({ username });
         if (admin) {
-            return res.json({ message: "Admin already exists" });
+            return res.status(409).json({ message: "Admin already exists" });
         }
         const newAdmin = new AdminModel({ username, password });
         await newAdmin.save();
-        res.status(201).json({
+        return res.status(201).json({
             created: true,
             admin: newAdmin
         })
     } catch (err) {
         console.log(err);
+        return res.status(500).send({ err: err.message });
     }
+});
+
+// login admin
+app.post("/login", async (req, res) => {
+    const { username, password } = req.body;
+    const admin = await AdminModel.findOne({ username });
+    if (!admin) {
+        return res.send({ message: "Username or password is inccorect!" });
+    }
+
+    if (!admin.comparePassword(password)) {
+        return res.send({ message: "Username or password is inccorect!" });
+    }
+
+    const token = jwt.sign({ id: admin._id }, process.env.SECRET);
+    res.send({ token });
+
 });
 
 const PORT = process.env.PORT || 3000;
