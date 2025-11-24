@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 
 app.use(cors());
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
 
 
 // connect to DB
@@ -83,7 +83,7 @@ app.post("/register", async (req, res) => {
         })
     } catch (err) {
         console.log(err);
-        return res.status(500).send({ err: err.message });
+        return res.status(500).json({ err: err.message });
     }
 });
 
@@ -92,15 +92,15 @@ app.post("/login", async (req, res) => {
     const { username, password } = req.body;
     const admin = await AdminModel.findOne({ username });
     if (!admin) {
-        return res.send({ message: "Username or password is inccorect!" });
+        return res.json({ message: "Username or password is inccorect!" });
     }
 
     if (!admin.comparePassword(password)) {
-        return res.send({ message: "Username or password is inccorect!" });
+        return res.json({ message: "Username or password is inccorect!" });
     }
 
     const token = jwt.sign({ id: admin._id }, process.env.SECRET);
-    res.send({ token });
+    res.json({ token, id: admin._id });
 
 });
 
